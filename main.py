@@ -18,7 +18,7 @@ first_message = True
 
 title_dict = {
               'cpu_usage':          {'desc': 'CPU Usage', 'suffix': '%'},
-              'cpu_frequency':      {'desc': 'CPU Frequency:', 'suffix': 'GHz'},
+              'cpu_frequency':      {'desc': 'CPU Frequency:', 'suffix': 'MHz'},
               'cpu_temperature':    {'desc': 'CPU Temperature:', 'suffix': 'C'},
               'cpu_power':          {'desc': 'CPU Power:', 'suffix': 'Watts'},
               'mem_total':          {'desc': 'Memory Total:', 'suffix': 'G'},
@@ -58,7 +58,7 @@ def init_display():
     spi = SPI(1, baudrate=800_000_000, sck=Pin(SCK), mosi=Pin(MOSI))
     display = Display(spi, dc=Pin(DC), cs=Pin(CS), rst=Pin(RST), rotation=90, width=320, height=240)
     font = XglcdFont('fonts/Noto_Sans_CJK_Medium15x18.c', 15, 18)
-    display.draw_text(x=500, y=100, font=font, text='No Message From PC', color=color565(255, 255, 255))
+    display.draw_text(x=50, y=100, font=font, text='No Message From PC', color=color565(255, 125, 0))
 
 
 def init_uart():
