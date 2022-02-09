@@ -12,20 +12,28 @@ RST = 12
 MOSI = 11
 SCK = 10
 CS = 9
-font = None
+# font = None
 display: Display = None
-first_message = True
+first_message = False
+
+font_dict = {
+    'big': XglcdFont('fonts/Agency_FB21x40.c', 21, 40),
+    'little': XglcdFont('fonts/Agency_FB11x22.c', 11, 22),
+    'mid': XglcdFont('fonts/Agency_FB14x25.c', 14, 25),
+}
 
 title_dict = {
-              'cpu_usage':          {'desc': 'CPU Usage', 'suffix': '%'},
-              'cpu_frequency':      {'desc': 'CPU Frequency:', 'suffix': 'MHz'},
-              'cpu_temperature':    {'desc': 'CPU Temperature:', 'suffix': 'C'},
-              'cpu_power':          {'desc': 'CPU Power:', 'suffix': 'Watts'},
-              'mem_total':          {'desc': 'Memory Total:', 'suffix': 'G'},
-              'mem_usage':          {'desc': 'Memory Usage:', 'suffix': '%'},
-              'disk_usage':         {'desc': 'Disk Usage:', 'suffix': '%'},
-              'disk_total':         {'desc': 'Disk Total:', 'suffix': 'G'},
-              'gpu_usage':          {'desc': 'GPU Usage', 'suffix': '%'},
+              'cpu_usage':          {'desc': 'CPU Usage', 'suffix': '%', 'x': 80, 'y': 35, 'width': 35, 'height': 24, 'font': font_dict['mid']},
+              'cpu_frequency':      {'desc': 'CPU Frequency:', 'suffix': ' MHz', 'x': 80, 'y': 11, 'width': 66, 'height': 24, 'font': font_dict['mid']},
+              'cpu_temperature':    {'desc': 'CPU Temperature:', 'suffix': '', 'x': 135, 'y': 35, 'width': 28, 'height': 24, 'font': font_dict['mid']},
+              'cpu_power':          {'desc': 'CPU Power:', 'suffix': ' Watts', 'x': 80, 'y': 58, 'width': 63, 'height': 17, 'font': font_dict['mid']},
+              'mem_total':          {'desc': 'Memory Total:', 'suffix': 'G', 'x': 80, 'y': 90, 'width': 50, 'height': 24, 'font': font_dict['mid']},
+              'mem_usage':          {'desc': 'Memory Usage:', 'suffix': '%', 'x': 80, 'y': 115, 'width': 50, 'height': 24, 'font': font_dict['mid']},
+              'disk_usage':         {'desc': 'Disk Usage:', 'suffix': '%', 'x': 80, 'y': 195, 'width': 66, 'height': 24, 'font': font_dict['mid']},
+              'disk_total':         {'desc': 'Disk Total:', 'suffix': 'G', 'x': 80, 'y': 169, 'width': 66, 'height': 24, 'font': font_dict['mid']},
+              'gpu_usage':          {'desc': 'GPU Usage', 'suffix': '%', 'x': 80, 'y': 194, 'width': 66, 'height': 24, 'font': font_dict['mid']},
+              'date':          {'desc': '', 'suffix': '', 'x': 199, 'y': 52, 'width': 100, 'height': 22, 'font': font_dict['little']},
+              'time':          {'desc': '', 'suffix': '', 'x': 199, 'y': 15, 'width': 100, 'height': 38, 'font': font_dict['big']},
               }
 
 
@@ -39,17 +47,10 @@ def print_pc_info(pc_info, key, line_height, top, refresh_title):
     map_dict = title_dict[key]
     if map_dict is None:
         return
-    title = map_dict['desc']
-    text = str(pc_info[key]) + map_dict['suffix']
-    if refresh_title:
-        display.draw_text(x=5, y=top, font=font, text=title, color=color565(255, 255, 255))
-        display.draw_line(x1=0, y1=top+line_height, x2=319, y2=top+line_height, color=color565(255, 255, 255))
-    display.draw_rectangle(x=200, y=top, w=100, h=line_height, color=color565(0, 0, 0))
-    r = random.randint(0, 255)
-    g = random.randint(0, 255)
-    b = random.randint(0, 255)
-    display.fill_rectangle(x=200, y=top, w=119, h=line_height, color=color565(0, 0, 0))
-    display.draw_text(x=200, y=top, font=font, text=text, color=color565(r, g, b))
+    if key in pc_info:
+        text = str(pc_info[key]) + map_dict['suffix']
+        display.fill_rectangle(x=map_dict['x'], y=map_dict['y'], w=map_dict['width'], h=map_dict['height'], color=color565(0, 0, 0))
+        display.draw_text(x=map_dict['x'], y=map_dict['y'], font=map_dict['font'], text=text, color=color565(17, 241, 20))
 
 
 def init_display():
@@ -57,8 +58,9 @@ def init_display():
     Pin(BL, Pin.OUT).value(1)
     spi = SPI(1, baudrate=800_000_000, sck=Pin(SCK), mosi=Pin(MOSI))
     display = Display(spi, dc=Pin(DC), cs=Pin(CS), rst=Pin(RST), rotation=90, width=320, height=240)
-    font = XglcdFont('fonts/Noto_Sans_CJK_Medium15x18.c', 15, 18)
-    display.draw_text(x=50, y=100, font=font, text='No Message From PC', color=color565(255, 125, 0))
+    display.draw_image('img/bg.raw', 0, 0, 320, 240)
+    # font = XglcdFont('fonts/Noto_Sans_CJK_Medium15x18.c', 15, 18)
+    # display.draw_text(x=50, y=100, font=font, text='No Message From PC', color=color565(255, 125, 0))
 
 
 def init_uart():
